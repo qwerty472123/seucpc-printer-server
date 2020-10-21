@@ -1,4 +1,4 @@
-# seucpc-printer-server
+# SEUCPC Printer Server
 
 This is a printer-server for ICPC/CCPC-like contest on Ubuntu.
 
