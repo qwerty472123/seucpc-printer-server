@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>打印服务</title>
+	<meta name="ViewPort" content="initial-scale=1, minimum-scale=1, width=device-width" />
+	<meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE" />
+	<style>
+		::-webkit-scrollbar {
+			background: #e0e0e0;
+			width: 10px;
+			height: 8px
+		}
+
+		::-webkit-scrollbar-track {
+			background: #e0e0e0
+		}
+
+		::-webkit-scrollbar-track-piece {
+			background: #e0e0e0
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #bcbcbc
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: #abaaaa
+		}
+
+		::-webkit-scrollbar-thumb:active {
+			background: #8e8d8d
+		}
+
+		::selection {
+			background: rgba(127, 127, 127, 0.3)
+		}
+
+		.bg1 {
+			background-color: #0068CD
+		}
+
+		.bg2 {
+			background-color: #1583DF;
+			font-weight: bold;
+		}
+
+		.bg3 {
+			background-color: #1065bd;
+		}
+
+		#info {
+			box-shadow: #6296b9 0 0 20px;
+			background: #3498DB;
+			color: white;
+			padding: 10px;
+			line-height: 15px;
+			font-size: 10px;
+			font-weight: 100;
+			border: 1px solid #3498DB;
+		}
+
+		#table {
+			margin: 5px 0 -5px
+		}
+		
+		textarea {
+			margin: 5px 0!important;
+			resize: none;
+			height: 40px!important
+		}
+		
+		html,
+		body {
+			width: 100%;
+			height: 100%
+		}
+
+		h1 {
+			margin: 0;
+			padding: 26px;
+			text-align: center;
+			position: relative;
+			top: 75px;
+			line-height: 30px;
+			font-size: 26px;
+			font-weight: 100;
+			color: #fff;
+			text-shadow: 0 0 4px #fff
+		}
+
+		html,
+		body,
+		p,
+		h2,
+		div {
+			margin: 0;
+			padding: 0
+		}
+
+		@keyframes wer {
+			from {
+				background-color: #56569d
+			}
+			17% {
+				background-color: #569d9d
+			}
+			33% {
+				background-color: #569d56
+			}
+			50% {
+				background-color: #9d9d56
+			}
+			67% {
+				background-color: #9d5656
+			}
+			83% {
+				background-color: #9d569d
+			}
+			100% {
+				background-color: #56569d
+			}
+		}
+
+		body {
+			animation: wer 8s ease infinite alternate;
+			background: #f2f2f2
+		}
+
+		html {
+			font: 12px "Segoe UI", "Microsoft YaHei", FreeSans, Arimo, "Droid Sans", "Hiragino Sans GB", "Hiragino Sans GB W3", Arial, sans-serif
+		}
+
+		.box {
+			box-shadow: #ffffff 0 0 20px;
+			position: relative;
+			top: 75px;
+			width: 850px;
+			max-width: 90%;
+			margin: 0 auto 0 auto;
+			padding-bottom: 20px;
+			background: #fff;
+			padding: 15px;
+			border: 1px solid #e5e5e5;
+			text-align: center
+		}
+
+		.main {
+			font-size: 18px;
+			color: #000;
+			font-weight: 500;
+			line-height: 1.5em
+		}
+
+		h2 {
+			margin-bottom: 20px;
+			font-size: 24px;
+			font-weight: 300;
+			color: #e05d6f
+		}
+		
+		.foot {
+			position: relative;
+			top: 75px;
+			margin: 15px 15px 0;
+			font-size: 12px;
+			color: #eee;
+			text-align: center;
+			line-height: 20px;
+			padding-bottom: 15px;
+		}
+
+		@media(max-width:550px) {
+			h1 {
+				top: 0
+			}
+			.box {
+				top: 0;
+				width: 90%;
+				border: 0
+			}
+			body {
+				background: #fff
+			}
+			.foot {
+				top: 0;
+			}
+		}
+
+		input[type=text], input[type=password], textarea {
+			display: inline-block;
+			height: 29px;
+			line-height: 23px\9;
+			margin: 0;
+			padding-left: 8px;
+			background: #fff;
+			border: 1px solid #d9d9d9;
+			border-top: 1px solid silver;
+			box-sizing: border-box;
+			width: 100%
+		}
+
+		input[type=text]:hover, input[type=password]:hover, textarea:hover {
+			border: 1px solid #b9b9b9;
+			border-top: 1px solid #a0a0a0;
+			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1)
+		}
+
+		input[type=text]:focus, input[type=password]:focus, textarea:focus {
+			outline: 0;
+			border: 1px solid #4d90fe;
+			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3)
+		}
+
+		input[type=submit] {
+			display: inline-block;
+			min-width: 54px;
+			letter-spacing: 1px;
+			text-align: center;
+			font-size: 12px;
+			font-weight: bold;
+			padding: 0 7px 0 8px;
+			transition: all 0.218s;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+			cursor: pointer;
+			outline: none;
+			height: 30px;
+			line-height: 30px;
+			vertical-align: bottom;
+			margin: 0;
+			border: 1px solid #3079ed;
+			color: #fff;
+			text-shadow: 0 1px rgba(0,0,0,0.1);
+			background-color: #4d90fe;
+			background-image: linear-gradient(top,#4d90fe,#4787ed);
+		}
+
+		input[type=submit]:hover {
+			border: 1px solid #2f5bb7;
+			text-shadow: 0 1px rgba(0,0,0,0.3);
+			background-color: #357ae8;
+			background-image: linear-gradient(top,#4d90fe,#357ae8);
+		}
+
+		input[type=submit]:active {
+			box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+		}
+
+		#errpwd {
+			margin-bottom: -33px;
+		}
+
+		tr,.empty,
+		#errpwd,
+		#info,
+		#box1 {
+			transition: all 0.25s ease 0s !important;
+		}
+
+		.bg1,
+		.bg3 {
+			cursor: pointer
+		}
+
+		.bg1:hover,
+		.bg3:hover {
+			filter: brightness(110%)
+		}
+
+		.bg1.clicked,
+		.bg3.clicked {
+			filter: brightness(90%)
+		}
+
+		.empty {
+			margin-bottom:0;
+		}
+
+		#uploadBox {
+			background-color: #888888;
+			border: 1px solid #333333;
+			box-shadow: inset #222 0 0 16px 0px;
+			color: #eee;
+			height: 250px;
+			align-items: center;
+			display: flex;
+			justify-content: center;
+			font-size: xx-large;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="miw">
+		<h1>打印服务</h1>
+		<div class="box" id="box1">
+			<h2 id="errpwd" style="display:none">
+				<b>密码</b> 错误
+			</h2>
+			<h2 id="errpwdempty" class="empty"></h2>
+			<div class="main">
+				<form action="#" onsubmit="return doSubmit()">
+					<input type="text" id="username" placeholder="用户名" required autocomplete="username">
+					<input type="password" id="pwd" placeholder="密码" required autocomplete="current-password">
+					<input type="submit" value="登录" style="margin: 0 0 -10px">
+				</form>
+			</div>
+		</div>
+		<div class="box" id="box2" style="display: none; opacity: 0;">
+			<h2 id="prtinfo" style="display:none; margin-bottom: 0;">
+				<b>打印</b> 成功
+			</h2>
+			<div class="main" style="padding: 10px;">
+				<form action="#" onsubmit="return doPrint()">
+					<div id="uploadBox">
+						拖入或者点击上传待打印文件
+					</div>
+					<input type="submit" style="margin: 0 0 -10px" value="打印">
+					<input type="submit" style="margin: 0 0 -10px" id="logout" value="登出">
+				</form>
+			</div>
+		</div>
+		<p class="foot">
+			东南大学 CPC 集训队
+		</p>
+	</div>
+	<script type="text/javascript">
+		function I(id) { return document.getElementById(id); }
+		function info(text, at) {
+			at = at || "errpwd";
+			if (text == "logout" || text == "print started") {
+				if (text == "logout") I(at).innerHTML = "<b>登出</b> 成功";
+				else I(at).innerHTML = "<b>打印</b> 成功";
+				I(at).style.color = '#65e05d';
+			} else {
+				I(at).style.color = null;
+				if (text == "not verified") {
+					I(at).innerHTML = "<b>登录</b> 过期";
+					setTimeout(function(){
+						location.reload();
+					},1000);
+				}
+				else if (text == "prt failed") I(at).innerHTML = "<b>打印</b> 失败";
+				else if (text == "not a pdf file") I(at).innerHTML = "所上传的不是 <b>PDF</b> 文件";
+				else if (text == "Password not correct") I(at).innerHTML = "<b>密码</b> 错误";
+				else if (text == "Username not found") I(at).innerHTML = "<b>用户名</b> 不存在";
+				else I(at).innerHTML = text;
+			}
+			if (at == "errpwd") I(at + "empty").style.marginBottom = "53px";
+			I(at).style.opacity = "0";
+			setTimeout(function () {
+				I(at).style.display = "block";
+				I(at).style.opacity = "1";
+				setTimeout(function () {
+					I(at).style.opacity = "0";
+					setTimeout(function () {
+						I(at).style.opacity = "1";
+					}, 250);
+				}, 250);
+			}, 250);
+		}
+		var jwt = localStorage.jwt;
+		var currId = "1", timeId = -1;
+		function switchPage(boxId) {
+			var oldId = currId;
+			currId = boxId;
+			I("box" + oldId).style.opacity = "0";
+			if (timeId >= 0) clearTimeout(timeId);
+			timeId = setTimeout(function () {
+				timeId = -1;
+				I("box" + oldId).style.display = "none";
+				I("box" + boxId).style.display = "block";
+				I("box" + boxId).style.opacity = "1";
+			}, 250);
+		}
+		function doCheck() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "./verify");
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+					var json = JSON.parse(xhr.responseText);
+					if (json.success && json.data.isValid) {
+						switchPage("2");
+					} else {
+						jwt = null;
+						delete localStorage.jwt;
+					}
+				}
+			};
+			xhr.send("jwt=" + encodeURIComponent(jwt));
+		}
+		if (jwt) doCheck();
+		function doSubmit() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "./login");
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+					var json = JSON.parse(xhr.responseText);
+					if (!json.success)
+						info(json.message);
+					else {
+						jwt = json.data.jwt;
+						localStorage.jwt = jwt;
+						switchPage("2");
+					}
+				}
+			};
+			xhr.send("name=" + encodeURIComponent(I('username').value) + "&pwd=" + encodeURIComponent(I('pwd').value));
+			return false;
+		}
+		function doLogout() {
+			newFile(null);
+			I('username').value = I('pwd').value = '';
+			delete localStorage.jwt;
+			jwt = null;
+			switchPage("1");
+		}
+		I('logout').onclick = function() {
+			doLogout();
+			info('logout');
+			return false;
+		};
+		var file = null;
+		function newFile(newFile) {
+			if (newFile === null) {
+				info('', "prtinfo");
+				I('uploadBox').innerText='拖入或者点击上传待打印文件';
+				return;
+			}
+			file = newFile;
+			console.log('New file: ', file);
+			I('uploadBox').innerText='当前文件：'+file.name;
+			/*if (file && !file.name.endsWith(".pdf")) {
+				info("not a pdf file", 'prtinfo');
+			}*/
+			if (file /*&& file.name.endsWith(".pdf")*/) info("", 'prtinfo');
+		}
+		I('uploadBox').onclick = function() {
+			var obj = document.createElement('input');
+			obj.type = 'file';
+			obj.style = 'position: fixed; opacity: 0; height: 0; width: 0;';
+			obj.onchange = function () {
+				let files = this.files;
+				if (files.length > 0) newFile(files[0]);
+				document.body.removeChild(obj);
+			};
+			document.body.appendChild(obj);
+			obj.click();
+		};
+		I('uploadBox').ondragover = function(e) {
+			e.preventDefault();
+		};
+		I('uploadBox').ondrop = function(e) {
+			if (e.dataTransfer.files.length > 0) {
+				newFile(e.dataTransfer.files[0]);
+				e.preventDefault();
+			}
+		};
+		function doPrint() {
+			if (!file.name.endsWith(".pdf")) {
+				//info("not a pdf file", 'prtinfo');
+				//return false;
+			}
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "./print");
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+					var json = JSON.parse(xhr.responseText);
+					if (!json.success) {
+						if (json.message == "jwt malformed") json.message = 'not verified';
+						if (json.message == "not verified") {
+							doLogout();
+							info(json.message);
+						} else info(json.message, "prtinfo");
+					}
+					else {
+						info(json.message, "prtinfo");
+					}
+				}
+			};
+			var data = new FormData();
+			data.append("jwt", jwt);
+			data.append("pdf", file);
+			xhr.send(data);
+			return false;
+		}
+	</script>
+</body>
+
+</html>

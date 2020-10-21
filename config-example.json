@@ -1,0 +1,53 @@
+{
+	"secret": "{Random string}",
+	"chat": {
+		"all": {
+			"type": "group",
+			"users": ["example2"]
+		},
+		"admin": {
+			"type": "best",
+			"users": ["example1"]
+		}
+	},
+	"user": {
+		"example1": {
+			"cfg": {
+				"admin": true,
+				"chat": ["example2", "all"]
+			},
+			"pwd": "{Salted hash string}"
+		},
+		"example2": {
+			"pwd": "{Salted hash string}",
+			"cfg": {
+				"chat": ["admin"]
+			}
+		}
+	},
+	"salt": "{Random string}",
+	"jwt": "{Random string}",
+	"global": {
+		"problems": 12
+	},
+	"https": {
+		"enable": true,
+		"key": "{Key file path}",
+		"cert": "{Cert file path}"
+	},
+	"limits": {
+		"MAX_FILE_SIZE": 67108864,
+		"MAX_SECRET_LENGTH": 40
+	},
+	"port": 84,
+	"renderer_cache_size": "3000",
+	"redis": "redis://127.0.0.1:6379",
+	"expiresIn": "7h",
+	"printer": "7180dn",
+	"db": {
+		"database": "printer",
+		"username": "{DB user}",
+		"password": "{DB pwd}",
+		"host": "127.0.0.1"
+	}
+}
