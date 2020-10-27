@@ -215,8 +215,6 @@ async function doPrint(req, res, buffer, ext) {
 			if (req.body.sides && ["two-sided-short-edge", "two-sided-long-edge", "one-sided"].includes(req.body.sides)) cups = { sides: req.body.sides };
 			while (cnt--) {
 				await new Promise((resolve, reject) => {
-					resolve(0);
-					return;
 					let options = {
 						data: buffer,
 						printer: cur,
