@@ -173,7 +173,7 @@ async function doPrint(req, res, buffer, ext, source) {
 				pdf.create(base.replace('<!--Code Paste-->', paste), {
 					"header": {
 						"height": "8mm",
-						"contents": '<p class="header">Requester: <b>' + prtname + '</b> Source: ' + source + ' Time: ' + moment().format() + '<span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
+						"contents": '<p class="header">Requester: <b>' + prtname + '</b> Source: ' + source + ' Time: ' + moment().format() + '<span style="float: right;">Page: <b>{{page}}</b>/<b>{{pages}}</b></span></p>'
 					},
 					"format": "A4",
 					"border": {
