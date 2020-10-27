@@ -6,6 +6,7 @@ global.config = cfg;
 
 const express = require('express');
 const path = require('path');
+const url = require('url');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -56,6 +57,14 @@ function markdown(obj, keys, noReplaceUI) {
 				});
 			}
 		}
+	});
+}
+
+function highlight(code, lang) {
+	return new Promise((resolve, reject) => {
+		renderer.highlight(code, lang, res => {
+			resolve(res);
+		});
 	});
 }
 
@@ -149,22 +158,23 @@ async function doPrint(req, res, buffer, ext) {
 
 		let failed = false;
 		let username = jwtGet(req.body.jwt);
+		if (!cfg.user.hasOwnProperty(username)) throw Error("Username not found");
 		if (ext !== ".pdf") {
 			let str = buffer.toString('utf-8');
-			if (ext !== ".md") {
-				str = '```' + ext.replace('.', '') + '\n' + str + '\n```\n';
-			}
+			let prtname = username;
+			if (cfg.user[username].cfg && cfg.user[username].cfg.print) prtname = cfg.user[username].cfg.print;
 			buffer = await new Promise(async (resolve, reject) => {
-				pdf.create('<style>pre{word-wrap:break-word;white-space:prewrap;}*{font-size:10px!important}</style>' + (await markdown(str)), {
+				let base = await fsp.readFile("./libs/assets/assets.html");
+				let paste = '';
+				if (ext !== '.md') {
+					paste = await highlight(str, ext.replace('.', ''));
+				} else {
+					paste = await markdown(str);
+				}
+				pdf.create(base.replace('<!--Code Paste-->', paste), {
 					"header": {
 						"height": "14mm",
-						"contents": '<div style="text-align: center;">please send to ' + username + '</div>'
-					},
-					"footer": {
-						"height": "14mm",
-						"contents": {
-							default: '<div style="text-align: center;"><span>{{page}}</span>/<span>{{pages}}</span></div>'
-						}
+						"contents": '<p><b>' + prtname + '</b><span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
 					},
 					"format": "A4",
 					"border": {
@@ -172,7 +182,8 @@ async function doPrint(req, res, buffer, ext) {
 						"right": "2mm",
 						"bottom": "2mm",
 						"left": "2mm"
-					}
+					},
+					"base": url.pathToFileURL(path.join(__dirname, 'assets')).href
 				}).toBuffer(function (err, buffer) {
 					if (err) {
 						reject('html failed');

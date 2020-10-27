@@ -30,7 +30,13 @@ const redisCache = {
 
 async function highlight(code, lang) {
   return await renderer.highlight(code, lang, redisCache, {
-    wrapper: null
+    wrapper: null,
+    pygments: {
+      options: {
+        classprefix: 'pl-',
+        linenos: 'inline'
+      }
+    }
   });
 }
 
