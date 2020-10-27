@@ -8,7 +8,7 @@ const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
-const multer  = require('multer');
+const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const printer = require("@thiagoelg/node-printer");
 const pdf = require('html-pdf');
@@ -60,7 +60,7 @@ function markdown(obj, keys, noReplaceUI) {
 }
 
 function secretEncrypt(secret) {
-	if(secret.length > cfg.limits.MAX_SECRET_LENGTH) return '';
+	if (secret.length > cfg.limits.MAX_SECRET_LENGTH) return '';
 	let hash = crypto.createHash('sha256');
 	return hash.update(cfg.salt + '|' + secret + '|' + cfg.salt, 'utf8').digest('hex');
 }
@@ -69,16 +69,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-   res.sendFile( __dirname + "/index.htm" );
+	res.sendFile(__dirname + "/index.htm");
 });
 
 app.post('/login', async (req, res) => {
-	try{
+	try {
 		let name = req.body.name;
-		if(!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
-		if(secretEncrypt(req.body.pwd) !== cfg.user[name].pwd) throw Error("Password not correct");
+		if (!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
+		if (secretEncrypt(req.body.pwd) !== cfg.user[name].pwd) throw Error("Password not correct");
 		res.json({ success: true, message: 'success', data: { jwt: jwt.sign({ name, prt: true }, cfg.jwt, { expiresIn: cfg.expiresIn }) } });
-	}catch(err){
+	} catch (err) {
 		res.json({ success: false, message: err.message });
 	}
 });
@@ -109,8 +109,8 @@ function jwtGet(token) {
 
 app.post('/verify', async (req, res) => {
 	try {
-		res.json({ success: true, message: 'verify success', data:{ isValid: jwtVerify(req.body.jwt) } })
-	}catch(err){
+		res.json({ success: true, message: 'verify success', data: { isValid: jwtVerify(req.body.jwt) } })
+	} catch (err) {
 		res.json({ success: false, message: err.message });
 	}
 });
@@ -118,13 +118,13 @@ app.post('/verify', async (req, res) => {
 app.post('/cfg', async (req, res) => {
 	try {
 		if (!jwtVerify(req.body.jwt)) throw new Error('not verified');
-		let name=jwtGet(req.body.jwt);
-		if(!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
+		let name = jwtGet(req.body.jwt);
+		if (!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
 		let ans = JSON.parse(JSON.stringify(cfg.global));
-		if(cfg.user[name].cfg)ans = Object.assign(ans, cfg.user[name].cfg);
+		if (cfg.user[name].cfg) ans = Object.assign(ans, cfg.user[name].cfg);
 		if (ans.admin) ans.printer = cfg.printer;
 		res.json({ success: true, message: 'config get success', cfg: ans });
-	}catch(err){
+	} catch (err) {
 		res.json({ success: false, message: err.message });
 	}
 });
@@ -132,21 +132,21 @@ app.post('/cfg', async (req, res) => {
 app.post('/set_printer', async (req, res) => {
 	try {
 		if (!jwtVerify(req.body.jwt)) throw new Error('not verified');
-		let name=jwtGet(req.body.jwt);
-		if(!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
+		let name = jwtGet(req.body.jwt);
+		if (!cfg.user.hasOwnProperty(name)) throw Error("Username not found");
 		if (cfg.user[name].cfg.admin) {
 			cfg.printer = req.body.printer;
 		}
 		res.json({ success: true, message: 'config set success' });
-	}catch(err){
+	} catch (err) {
 		res.json({ success: false, message: err.message });
 	}
 });
 
 async function doPrint(req, res, buffer, ext) {
-	try{
+	try {
 		if (!jwtVerify(req.body.jwt)) throw Error("not verified");
-		
+
 		let failed = false;
 		let username = jwtGet(req.body.jwt);
 		if (ext !== ".pdf") {
@@ -155,7 +155,7 @@ async function doPrint(req, res, buffer, ext) {
 				str = '```' + ext.replace('.', '') + '\n' + str + '\n```\n';
 			}
 			buffer = await new Promise(async (resolve, reject) => {
-				pdf.create('<style>pre{word-wrap:break-word;white-space:prewrap;}*{font-size:10px!important}</style>'+(await markdown(str)), {
+				pdf.create('<style>pre{word-wrap:break-word;white-space:prewrap;}*{font-size:10px!important}</style>' + (await markdown(str)), {
 					"header": {
 						"height": "14mm",
 						"contents": '<div style="text-align: center;">please send to ' + username + '</div>'
@@ -189,34 +189,47 @@ async function doPrint(req, res, buffer, ext) {
 		}
 		await fsp.writeFile(path.join(__dirname, 'printers', username + '_' + cfg.user[username].cnt + '.pdf'), buffer);
 
-		await new Promise((resolve, reject) => {
+		{
+			let cnt = parseInt(req.body.cnt) || 1;
+			if (cnt <= 0) cnt = 1;
 			let arr = printer.getPrinters();
 			let best = cfg.printer.toLowerCase();
 			let cur = null;
-			for(let obj of arr){
-				if (cur===null){
-					if(obj.isDefault)cur=obj.name;
-					else if(obj.name.toLowerCase().includes(best))cur=obj.name;
-				}else if(obj.isDefault && obj.name.toLowerCase().includes(best))cur=obj.name;
+			for (let obj of arr) {
+				if (cur === null) {
+					if (obj.isDefault) cur = obj.name;
+					else if (obj.name.toLowerCase().includes(best)) cur = obj.name;
+				} else if (obj.isDefault && obj.name.toLowerCase().includes(best)) cur = obj.name;
 			}
-			printer.printDirect({
-				data: buffer,
-				printer: cur,
-				type: 'PDF',
-				success: function(id) {
-					resolve(id);
-				},
-				error: function(err) {
-					reject(err);
-				}
-			});
-		}).catch(err=>{
-			console.log(err)
-			res.json({ success: true, message: "prt failed" });
-			failed = true;
-		});
+			let cups = null;
+			if (req.body.sides && ["two-sided-short-edge", "two-sided-long-edge", "one-sided"].includes(req.body.sides)) cups = { sides: req.body.sides };
+			while (cnt--) {
+				await new Promise((resolve, reject) => {
+					let options = {
+						data: buffer,
+						printer: cur,
+						type: 'PDF',
+						success: function (id) {
+							resolve(id);
+						},
+						error: function (err) {
+							reject(err);
+						}
+					};
+					if (cups) options.options = cups;
+					printer.printDirect(options);
+				}).catch(err => {
+					console.log(err)
+					res.json({ success: true, message: "prt failed" });
+					failed = true;
+				});
+				if (failed) break;
+			}
+		}
+
+
 		if (!failed) res.json({ success: true, message: "print started" });
-	}catch(err){
+	} catch (err) {
 		res.json({ success: false, message: err.message });
 		console.log(err)
 	}
@@ -250,27 +263,27 @@ function randomChoiceInArray(array) {
 	return array[Math.floor(Math.random() * array.length)];
 }
 
-for(let name in cfg.chat) {
+for (let name in cfg.chat) {
 	let val = cfg.chat[name];
 	let func = null;
-	switch(val.type) {
-	case 'group':
-		func = () => val.users;
-		break;
-	case 'best':
-		func = () => {
-			let all = val.users;
-			let conned = [];
-			for (let user of all) {
-				if (connections.hasOwnProperty(user)) conned.push(user);
-			}
-			console.log(conned, all)
-			if (conned.length > 0) return [randomChoiceInArray(conned)];
-			return [randomChoiceInArray(all)];
-		};
-		break;
-	default:
-		throw new Error('No such chat type: ' + val.type);
+	switch (val.type) {
+		case 'group':
+			func = () => val.users;
+			break;
+		case 'best':
+			func = () => {
+				let all = val.users;
+				let conned = [];
+				for (let user of all) {
+					if (connections.hasOwnProperty(user)) conned.push(user);
+				}
+				console.log(conned, all)
+				if (conned.length > 0) return [randomChoiceInArray(conned)];
+				return [randomChoiceInArray(all)];
+			};
+			break;
+		default:
+			throw new Error('No such chat type: ' + val.type);
 	}
 	val.getChats = func;
 }
@@ -290,7 +303,7 @@ async function pushChat(rec) {
 	try {
 		if (rec.readed) return;
 		if (!connections.hasOwnProperty(rec.receiver)) return;
-		connections[rec.receiver].emit('notify', { 
+		connections[rec.receiver].emit('notify', {
 			from: rec.author,
 			message: rec.content,
 			public_time: rec.public_time,
@@ -351,12 +364,14 @@ io.on('connect', socket => {
 		}
 		connections[cur] = socket;
 		try {
-			let arr = await Notes.findAll({ where: {
-				receiver: cur,
-				readed: false
-			} });
-			for(let rec of arr) await pushChat(rec);
-		} catch(err) {
+			let arr = await Notes.findAll({
+				where: {
+					receiver: cur,
+					readed: false
+				}
+			});
+			for (let rec of arr) await pushChat(rec);
+		} catch (err) {
 			console.log(err);
 		}
 	});
