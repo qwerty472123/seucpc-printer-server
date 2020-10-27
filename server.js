@@ -4,6 +4,7 @@ const fsp = fs.promises;
 let cfg = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 global.config = cfg;
 
+const moment = require('moment');
 const express = require('express');
 const path = require('path');
 const url = require('url');
@@ -150,7 +151,7 @@ app.post('/set_printer', async (req, res) => {
 	}
 });
 
-async function doPrint(req, res, buffer, ext) {
+async function doPrint(req, res, buffer, ext, source) {
 	try {
 		if (!jwtVerify(req.body.jwt)) throw Error("not verified");
 
@@ -172,7 +173,7 @@ async function doPrint(req, res, buffer, ext) {
 				pdf.create(base.replace('<!--Code Paste-->', paste), {
 					"header": {
 						"height": "8mm",
-						"contents": '<p class="header"><b>' + prtname + '</b><span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
+						"contents": '<p class="header">Requester: <b>' + prtname + '</b> Source: ' + source + ' Time: ' + moment().format() + '<span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
 					},
 					"format": "A4",
 					"border": {
@@ -246,11 +247,11 @@ async function doPrint(req, res, buffer, ext) {
 }
 
 app.post('/print', multer({ storage: multer.memoryStorage(), limits: { fileSize: cfg.limits.MAX_FILE_SIZE } }).single("pdf"), async (req, res) => {
-	await doPrint(req, res, req.file.buffer, path.extname(req.file.originalname));
+	await doPrint(req, res, req.file.buffer, path.extname(req.file.originalname), req.file.originalname);
 });
 
 app.post('/print_text', async (req, res) => {
-	await doPrint(req, res, Buffer.from(req.body.buffer), '.' + req.body.type);
+	await doPrint(req, res, Buffer.from(req.body.buffer), '.' + req.body.type, 'Paste');
 });
 
 let server = null;
