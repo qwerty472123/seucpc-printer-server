@@ -28,16 +28,27 @@ const redisCache = {
   set: redisLru.set.bind(redisLru)
 };
 
+function markLineNumbers(html) {
+  let lines = html.split('\n');
+  let id = 0;
+  let ans = '<table class="highlight"><tbody>';
+  if(lines[lines.length - 1].length < 1) lines.pop();
+  for(let line of lines){
+    id++;
+    ans += `<tr><td class="lineno">${id}: </td><td class="code"><pre>${line}</pre></td></tr>\n`;
+  }
+  return ans + '</tbody></table>';
+}
+
 async function highlight(code, lang) {
-  return await renderer.highlight(code, lang, redisCache, {
+  return markLineNumbers(await renderer.highlight(code, lang, redisCache, {
     wrapper: null,
     pygments: {
       options: {
-        classprefix: 'pl-',
-        linenos: 'inline'
+        classprefix: 'pl-'
       }
     }
-  });
+  }));
 }
 
 async function markdown(markdownCode) {

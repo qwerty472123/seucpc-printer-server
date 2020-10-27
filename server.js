@@ -95,7 +95,6 @@ app.post('/login', async (req, res) => {
 function jwtVerify(token) {
 	try {
 		let obj = jwt.verify(token, cfg.jwt);
-		console.log(obj)
 		if (obj.prt && cfg.user.hasOwnProperty(obj.name)) return true;
 		return false;
 	} catch (err) {
@@ -107,7 +106,6 @@ function jwtVerify(token) {
 function jwtGet(token) {
 	try {
 		let obj = jwt.verify(token, cfg.jwt);
-		console.log(obj)
 		if (obj.prt && cfg.user.hasOwnProperty(obj.name)) return obj.name;
 		return false;
 	} catch (err) {
@@ -164,17 +162,17 @@ async function doPrint(req, res, buffer, ext) {
 			let prtname = username;
 			if (cfg.user[username].cfg && cfg.user[username].cfg.print) prtname = cfg.user[username].cfg.print;
 			buffer = await new Promise(async (resolve, reject) => {
-				let base = await fsp.readFile("./libs/assets/assets.html");
+				let base = await fsp.readFile("./libs/assets/assets.html", 'utf-8');
 				let paste = '';
-				if (ext !== '.md') {
+				if (ext !== '.md' && ext !== '.markdown') {
 					paste = await highlight(str, ext.replace('.', ''));
 				} else {
 					paste = await markdown(str);
 				}
 				pdf.create(base.replace('<!--Code Paste-->', paste), {
 					"header": {
-						"height": "14mm",
-						"contents": '<p><b>' + prtname + '</b><span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
+						"height": "8mm",
+						"contents": '<p class="header"><b>' + prtname + '</b><span style="float: right;"><b>{{page}}</b>/<b>{{pages}}</b></span></p>'
 					},
 					"format": "A4",
 					"border": {
@@ -183,10 +181,11 @@ async function doPrint(req, res, buffer, ext) {
 						"bottom": "2mm",
 						"left": "2mm"
 					},
-					"base": url.pathToFileURL(path.join(__dirname, 'assets')).href
+					"base": url.pathToFileURL(path.join(__dirname, "libs", 'assets', 'assets.html')).href,
+					"type": "pdf"
 				}).toBuffer(function (err, buffer) {
 					if (err) {
-						reject('html failed');
+						reject(new Error('<b>HTML to PDF</b> 过程出错'));
 						return;
 					}
 					resolve(buffer);
@@ -216,6 +215,8 @@ async function doPrint(req, res, buffer, ext) {
 			if (req.body.sides && ["two-sided-short-edge", "two-sided-long-edge", "one-sided"].includes(req.body.sides)) cups = { sides: req.body.sides };
 			while (cnt--) {
 				await new Promise((resolve, reject) => {
+					resolve(0);
+					return;
 					let options = {
 						data: buffer,
 						printer: cur,
