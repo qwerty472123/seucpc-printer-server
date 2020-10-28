@@ -23,21 +23,6 @@ const xss = new XSS.FilterXSS({
   }
 });
 
-const Redis = require('redis');
-const RedisLRU = require('redis-lru');
-const util = require('util');
-const { pathToFileURL } = require('url');
-const redis = Redis.createClient(process.argv[2]);
-const redisLru = RedisLRU(redis, parseInt(process.argv[3]));
-const redisCache = {
-  get(key) {
-    return redisLru.get('PRT' + key);
-  },
-  set(key, value, maxAge) {
-    return redisLru.set('PRT' + key, value, maxAge);
-  }
-};
-
 function markLineNumbers(html) {
   let lines = html.split('\n');
   let id = 0;
@@ -51,7 +36,7 @@ function markLineNumbers(html) {
 }
 
 async function highlight(code, lang) {
-  return markLineNumbers(await renderer.highlight(code, lang, redisCache, {
+  return markLineNumbers(await renderer.highlight(code, lang, null, {
     wrapper: null,
     pygments: {
       options: {
@@ -70,7 +55,7 @@ async function markdown(markdownCode) {
     return html;
   };
 
-  return await renderer.markdown(markdownCode, redisCache, filter);
+  return await renderer.markdown(markdownCode, null, filter);
 }
 
 process.on('message', async msg => {

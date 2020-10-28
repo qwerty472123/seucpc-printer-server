@@ -40,8 +40,6 @@
 		"MAX_SECRET_LENGTH": 40
 	},
 	"port": 84,
-	"renderer_cache_size": "3000",
-	"redis": "redis://127.0.0.1:6379",
 	"expiresIn": "7h",
 	"printer": "7180dn",
 	"db": {
@@ -49,5 +47,14 @@
 		"username": "{DB user}",
 		"password": "{DB pwd}",
 		"host": "127.0.0.1"
+	},
+	"print": {
+		"border": {
+			"top": "4mm",
+			"right": "4mm",
+			"bottom": "4mm",
+			"left": "4mm"
+		},
+		"format": "A4"
 	}
 }

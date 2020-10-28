@@ -1,6 +1,6 @@
 const child_process = require('child_process');
 
-const rendererd = child_process.fork(__dirname + '/rendererd', [config.redis, parseInt(config.renderer_cache_size)]);
+const rendererd = child_process.fork(__dirname + '/rendererd');
 
 const resolver = {};
 let currentId = 0;

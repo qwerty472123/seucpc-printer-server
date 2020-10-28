@@ -4,7 +4,7 @@
   "description": "web-printer",
   "main": "server.js",
   "dependencies": {
-    "@4qwerty7/syzoj-renderer": "^1.0.8",
+    "@4qwerty7/syzoj-renderer": "^1.0.9",
     "@thiagoelg/node-printer": "^0.5.3",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
@@ -16,8 +16,6 @@
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "mysql2": "^2.2.5",
-    "redis": "^3.0.2",
-    "redis-lru": "^0.6.0",
     "sequelize": "^6.3.5",
     "socket.io": "^2.3.0",
     "xss": "^1.0.8"
