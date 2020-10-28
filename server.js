@@ -17,6 +17,7 @@ const pdf = require('html-pdf');
 const cheerio = require('cheerio');
 
 const renderer = require('./libs/renderer');
+let Contents = null;
 let Notes = null;
 
 let app = express();
@@ -314,11 +315,12 @@ async function pushChat(rec) {
 	try {
 		if (rec.readed) return;
 		if (!connections.hasOwnProperty(rec.receiver)) return;
+		await rec.loadSource();
 		connections[rec.receiver].emit('notify', {
-			from: rec.author,
-			message: rec.content,
-			public_time: rec.public_time,
-			remark: rec.author + '_' + rec.author + '_' + rec.public_time
+			from: rec.source.author,
+			message: rec.source.content,
+			public_time: rec.source.public_time,
+			remark: rec.source.author + '_' + rec.receiver + '_' + rec.source.public_time
 		});
 		rec.readed = true;
 		await rec.save();
@@ -328,15 +330,13 @@ async function pushChat(rec) {
 	}
 }
 
-async function sendChatByUserName(from, name, message) {
+async function sendChatByUserName(name, source) {
 	if (!cfg.user.hasOwnProperty(name)) return null;
 	try {
 		let rec = await Notes.create({
-			content: message,
 			author: from,
-			receiver: name,
-			public_time: getTimeSecond(),
-			readed: false
+			readed: false,
+			source_id: source.id
 		});
 		if (connections[name]) await pushChat(rec);
 		else await rec.save();
@@ -347,17 +347,24 @@ async function sendChatByUserName(from, name, message) {
 	}
 }
 
-async function sendChatsByChatName(from, name, message) {
+async function sendChatsByChatName(from, name, message, extra_info) {
 	let chats = getChatsByChatName(name);
-	if (!Array.isArray(chats)) {
+	if (!Array.isArray(chats) || chats.length === 0) {
 		return { success: false, reason: '无接收者' };
 	}
 	for (let user of chats)
 		if (!cfg.user.hasOwnProperty(user))
 			return { success: false, reason: '接收者不存在' };
 	let sended = [], recorded = [];
+	let source = await Contents.create({
+		content: message,
+		author: from,
+		public_time: getTimeSecond()
+	});
+	if (extra_info) source.extra_info = extra_info;
+	await source.save();
 	for (let user of chats) {
-		let result = await sendChatByUserName(from, user, message);
+		let result = await sendChatByUserName(user, source);
 		if (result === true) sended.push(user);
 		else if (result === false) recorded.push(user);
 		else return { success: false, reason: '送信异常' };
@@ -408,6 +415,7 @@ io.on('connect', socket => {
 
 require('./models/loader.js')().then(_ => {
 	Notes = require('./models/notes.js');
+	Contents = require('./models/contents');
 	server.listen(cfg.port, () => {
 		console.log('Listening...');
 	});

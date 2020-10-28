@@ -1,13 +1,13 @@
 let Sequelize = require('sequelize');
 let db = global.db;
 
+let Contents = require('./contents.js');
+
 let model = db.define('notes', {
   id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  content: { type: Sequelize.TEXT },
-  author: { type: Sequelize.STRING(64) },
   receiver: { type: Sequelize.STRING(64) },
-  public_time: { type: Sequelize.INTEGER },
-  readed: { type: Sequelize.BOOLEAN }
+  readed: { type: Sequelize.BOOLEAN },
+  source_id: { type: Sequelize.INTEGER }
 }, {
   timestamps: false,
   tableName: 'notes',
@@ -22,12 +22,26 @@ let Model = require('./common');
 class Notes extends Model {
   static async create(val) {
     return Notes.fromRecord(Notes.model.build(Object.assign({
-      content: '',
-      author: '',
       receiver: '',
-      public_time: 0,
-      readed: false
+      readed: false,
+      source_id: 0
     }, val)));
+  }
+
+  async loadSource() {
+    if (this.source_id == 0) {
+      this.source = await Contents.create();
+      return;
+    }
+    this.source = await Contents.fromID(this.source_id);
+  }
+
+  async saveAll() {
+    if (this.source) {
+      await this.source.save();
+      this.source_id = this.source.id;
+    }
+    await this.save();
   }
 
   getModel() { return model; }
