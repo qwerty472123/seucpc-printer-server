@@ -180,13 +180,8 @@ async function doPrint(req, res, buffer, ext, source) {
 						"height": "8mm",
 						"contents": $.html()
 					},
-					"format": "A4",
-					"border": {
-						"top": "4mm",
-						"right": "2mm",
-						"bottom": "4mm",
-						"left": "2mm"
-					},
+					"format": cfg.print.format,
+					"border": cfg.print.border,
 					"base": url.pathToFileURL(path.join(__dirname, "libs", 'assets', 'assets.html')).href,
 					"type": "pdf"
 				}).toBuffer(function (err, buffer) {
