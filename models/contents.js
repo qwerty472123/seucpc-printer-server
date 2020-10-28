@@ -15,7 +15,7 @@ let model = db.define('contents', {
 let Model = require('./common');
 class Contents extends Model {
   static async create(val) {
-    return Contents.fromRecord(Notes.model.build(Object.assign({
+    return Contents.fromRecord(Contents.model.build(Object.assign({
       content: '',
       author: '',
       public_time: 0,
@@ -26,6 +26,6 @@ class Contents extends Model {
   getModel() { return model; }
 };
 
-Notes.model = model;
+Contents.model = model;
 
 module.exports = Contents;

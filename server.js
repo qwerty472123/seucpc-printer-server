@@ -320,7 +320,15 @@ async function pushChat(rec) {
 			from: rec.source.author,
 			message: rec.source.content,
 			public_time: rec.source.public_time,
-			remark: rec.source.author + '_' + rec.receiver + '_' + rec.source.public_time
+			remark: rec.source.author + '_' + rec.receiver + '_' + rec.source.public_time,
+			extra_info: rec.source.extra_info
+		});
+		console.log(rec.receiver, {
+			from: rec.source.author,
+			message: rec.source.content,
+			public_time: rec.source.public_time,
+			remark: rec.source.author + '_' + rec.receiver + '_' + rec.source.public_time,
+			extra_info: rec.source.extra_info
 		});
 		rec.readed = true;
 		await rec.save();
@@ -334,7 +342,7 @@ async function sendChatByUserName(name, source) {
 	if (!cfg.user.hasOwnProperty(name)) return null;
 	try {
 		let rec = await Notes.create({
-			author: from,
+			receiver: name,
 			readed: false,
 			source_id: source.id
 		});
