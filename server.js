@@ -182,9 +182,9 @@ async function doPrint(req, res, buffer, ext, source) {
 					},
 					"format": "A4",
 					"border": {
-						"top": "2mm",
+						"top": "4mm",
 						"right": "2mm",
-						"bottom": "2mm",
+						"bottom": "4mm",
 						"left": "2mm"
 					},
 					"base": url.pathToFileURL(path.join(__dirname, "libs", 'assets', 'assets.html')).href,
