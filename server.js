@@ -14,6 +14,7 @@ const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const printer = require("@thiagoelg/node-printer");
 const pdf = require('html-pdf');
+const cheerio = require('cheerio');
 
 const renderer = require('./libs/renderer');
 let Notes = null;
@@ -170,10 +171,14 @@ async function doPrint(req, res, buffer, ext, source) {
 				} else {
 					paste = await markdown(str);
 				}
+				let $ = cheerio.load('<p class="header">Requester: <b class="cio-req"></b> Source: <span class="cio-source"></span> Time: <span class="cio-time"></span><span style="float: right;">Page: <b>{{page}}</b>/<b>{{pages}}</b></span></p>');
+				$('.cio-req').text(prtname);
+				$('.cio-source').text(source);
+				$('.cio-time').text(moment().format());
 				pdf.create(base.replace('<!--Code Paste-->', paste), {
 					"header": {
 						"height": "8mm",
-						"contents": '<p class="header">Requester: <b>' + prtname + '</b> Source: ' + source + ' Time: ' + moment().format() + '<span style="float: right;">Page: <b>{{page}}</b>/<b>{{pages}}</b></span></p>'
+						"contents": $.html()
 					},
 					"format": "A4",
 					"border": {
