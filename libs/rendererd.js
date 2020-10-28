@@ -1,6 +1,7 @@
 const renderer = require('@4qwerty7/syzoj-renderer');
 const XSS = require('xss');
 const xssWhiteList = Object.assign({}, require('xss/lib/default').whiteList);
+const path = require('path');
 delete xssWhiteList.audio;
 delete xssWhiteList.video;
 
@@ -12,8 +13,12 @@ const xss = new XSS.FilterXSS({
   whiteList: xssWhiteList,
   stripIgnoreTag: true,
   onTagAttr: (tag, name, value, isWhiteAttr) => {
-    if (tag.toLowerCase() === 'img' && name.toLowerCase() === 'src' && value.startsWith('data:image/')) {
-      return name + '="' + XSS.escapeAttrValue(value) + '"';
+    if (tag.toLowerCase() === 'img' && name.toLowerCase() === 'src') {
+      if (value.startsWith('data:image/'))
+        return name + '="' + XSS.escapeAttrValue(value) + '"';
+      else {
+        return "";
+      }
     }
   }
 });
@@ -21,11 +26,16 @@ const xss = new XSS.FilterXSS({
 const Redis = require('redis');
 const RedisLRU = require('redis-lru');
 const util = require('util');
+const { pathToFileURL } = require('url');
 const redis = Redis.createClient(process.argv[2]);
 const redisLru = RedisLRU(redis, parseInt(process.argv[3]));
 const redisCache = {
-  get: redisLru.get.bind(redisLru),
-  set: redisLru.set.bind(redisLru)
+  get(key) {
+    return redisLru.get('PRT' + key);
+  },
+  set(key, value, maxAge) {
+    return redisLru.set('PRT' + key, value, maxAge);
+  }
 };
 
 function markLineNumbers(html) {
