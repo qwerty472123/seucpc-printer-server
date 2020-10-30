@@ -205,13 +205,19 @@ async function doPrint(req, res, buffer, ext, source) {
 			let cnt = parseInt(req.body.cnt) || 1;
 			if (cnt <= 0) cnt = 1;
 			let arr = printer.getPrinters();
-			let best = cfg.printer.toLowerCase();
-			let cur = null;
+			let best = cfg.printer;
+			let cur = null, maxWeight = -1;
 			for (let obj of arr) {
-				if (cur === null) {
-					if (obj.isDefault) cur = obj.name;
-					else if (obj.name.toLowerCase().includes(best)) cur = obj.name;
-				} else if (obj.isDefault && obj.name.toLowerCase().includes(best)) cur = obj.name;
+				let weight = 0;
+				if (obj.isDefault) weight += 5;
+				if (obj.name === best) weight += 100;
+				else if (obj.name.toLowerCase() === best.toLowerCase()) weight += 50;
+				else if (obj.name.includes(best)) weight += 20;
+				else if (obj.name.toLowerCase().includes(best.toLowerCase())) weight += 10;
+				if (maxWeight < weight) {
+					maxWeight = weight;
+					cur = obj.name;
+				}
 			}
 			let cups = null;
 			if (req.body.sides && ["two-sided-short-edge", "two-sided-long-edge", "one-sided"].includes(req.body.sides)) cups = { sides: req.body.sides };
