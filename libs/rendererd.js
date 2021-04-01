@@ -30,7 +30,7 @@ function markLineNumbers(html) {
   if(lines[lines.length - 1].length < 1) lines.pop();
   for(let line of lines){
     id++;
-    ans += `<tr><td class="lineno">${id}: </td><td class="code"><pre>${line}</pre></td></tr>\n`;
+    ans += `<tr><td class="lineno">${id}: </td><td class="code"><pre class="inner_highlight">${line}</pre></td></tr>\n`;
   }
   return ans + '</tbody></table>';
 }
@@ -55,7 +55,11 @@ async function markdown(markdownCode) {
     return html;
   };
 
-  return await renderer.markdown(markdownCode, null, filter);
+  return await renderer.markdown(markdownCode, null, filter, {
+    highlight: {
+      highlighter: highlight
+    }
+  });
 }
 
 process.on('message', async msg => {
